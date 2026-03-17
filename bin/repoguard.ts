@@ -1,2 +1,3 @@
 #!/usr/bin/env node
-console.log('RepoGuard CLI - coming soon');
+import { run } from '../src/cli.js';
+run();
