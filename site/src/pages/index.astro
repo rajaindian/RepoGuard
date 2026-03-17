@@ -1,0 +1,555 @@
+---
+import Layout from '../layouts/Layout.astro';
+---
+
+<Layout
+  title="RepoGuard — Scan before you install"
+  description="Scan any skill, plugin, or package for malicious code before you install it. Static security analysis with clear RED/YELLOW/GREEN verdicts."
+>
+  <div class="page">
+    <!-- Nav -->
+    <nav>
+      <div class="nav-inner">
+        <a href="/" class="logo">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" fill="none" width="28" height="28">
+            <path d="M32 12L16 22v20l16 10 16-10V22L32 12z" stroke="#22c55e" stroke-width="2.5" fill="none"/>
+            <circle cx="32" cy="33" r="6" stroke="#22c55e" stroke-width="2" fill="none"/>
+            <path d="M29 33l2 2 4-4" stroke="#22c55e" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+          <span>RepoGuard</span>
+        </a>
+        <a href="https://github.com/rajaindian/RepoGuard" class="nav-link" target="_blank" rel="noopener">GitHub</a>
+      </div>
+    </nav>
+
+    <!-- Hero -->
+    <section class="hero">
+      <div class="hero-badge">Open source security scanner</div>
+      <h1>Scan before you install.</h1>
+      <p class="hero-sub">
+        Check any skill, plugin, or package for malicious code before it runs on your machine.
+        Get a clear <span class="red">RED</span> / <span class="yellow">YELLOW</span> / <span class="green">GREEN</span> verdict in seconds.
+      </p>
+      <div class="hero-actions">
+        <a href="#install" class="btn btn-primary">Get started</a>
+        <a href="https://github.com/rajaindian/RepoGuard" class="btn btn-ghost" target="_blank" rel="noopener">View on GitHub</a>
+      </div>
+    </section>
+
+    <!-- Terminal demo -->
+    <section class="demo">
+      <div class="terminal">
+        <div class="terminal-bar">
+          <span class="dot red-dot"></span>
+          <span class="dot yellow-dot"></span>
+          <span class="dot green-dot"></span>
+          <span class="terminal-title">repoguard scan</span>
+        </div>
+        <pre><code><span class="dim">$</span> repoguard scan https://github.com/sketchy/plugin
+
+<span class="white">  RepoGuard Report: plugin</span>
+<span class="red">  Verdict: RED</span>
+
+  Data Exfiltration      <span class="red">█████████░</span>  HIGH
+  Obfuscated Code        <span class="yellow">██████░░░░</span>  MED
+  Install Scripts        <span class="red">████████░░</span>  HIGH
+  Backdoors              <span class="dim">░░░░░░░░░░</span>  NONE
+  Privacy Violations     <span class="green">███░░░░░░░</span>  LOW
+  Dependency Risks       <span class="dim">░░░░░░░░░░</span>  NONE
+  Filesystem Access      <span class="yellow">█████░░░░░</span>  MED
+  Supply Chain Red Flags <span class="green">██░░░░░░░░</span>  LOW
+
+  Top findings:
+  <span class="red">!</span> postinstall script runs curl | bash  <span class="dim">(package.json:8)</span>
+  <span class="red">!</span> Reads .env and POSTs to Discord webhook  <span class="dim">(steal.js:12)</span>
+  <span class="yellow">*</span> Base64-encoded payload passed to eval()  <span class="dim">(utils.js:45)</span>
+
+<span class="red">  Recommendation: DO NOT USE this repository.</span></code></pre>
+      </div>
+    </section>
+
+    <!-- What to scan -->
+    <section class="section">
+      <h2>What should you scan?</h2>
+      <div class="grid">
+        <div class="card">
+          <div class="card-icon">⚡</div>
+          <h3>Claude Code Skills</h3>
+          <p>Skills and plugins run with your full permissions. Scan them before adding to your workflow.</p>
+        </div>
+        <div class="card">
+          <div class="card-icon">🔌</div>
+          <h3>MCP Servers</h3>
+          <p>MCP servers connect directly to your AI tools. Verify they're not exfiltrating your data.</p>
+        </div>
+        <div class="card">
+          <div class="card-icon">📦</div>
+          <h3>npm / pip Packages</h3>
+          <p>Scan the source repo of any package before installing. Catch typosquats and malicious install scripts.</p>
+        </div>
+        <div class="card">
+          <div class="card-icon">🔧</div>
+          <h3>VS Code Extensions</h3>
+          <p>Extensions run inside your editor with access to your files. Check the source first.</p>
+        </div>
+        <div class="card">
+          <div class="card-icon">🔄</div>
+          <h3>GitHub Actions</h3>
+          <p>Actions run in your CI/CD pipeline with access to secrets. Don't trust blindly.</p>
+        </div>
+        <div class="card">
+          <div class="card-icon">🛡️</div>
+          <h3>Any Open Source Repo</h3>
+          <p>Before you clone and run anything, let RepoGuard tell you what's inside.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- 8 categories -->
+    <section class="section">
+      <h2>8 security checks in every scan</h2>
+      <div class="categories">
+        <div class="cat"><span class="cat-dot" style="background:#ef4444"></span><strong>Data Exfiltration</strong> — Reads .env, SSH keys, cookies and sends them to external servers</div>
+        <div class="cat"><span class="cat-dot" style="background:#f97316"></span><strong>Obfuscation</strong> — eval(), base64, hex encoding, zero-width Unicode, high-entropy strings</div>
+        <div class="cat"><span class="cat-dot" style="background:#eab308"></span><strong>Install Scripts</strong> — Dangerous postinstall hooks, curl|bash, setup.py exec patterns</div>
+        <div class="cat"><span class="cat-dot" style="background:#ef4444"></span><strong>Backdoors</strong> — Reverse shells, remote code execution, command & control patterns</div>
+        <div class="cat"><span class="cat-dot" style="background:#a855f7"></span><strong>Privacy Violations</strong> — Geolocation, clipboard, camera/mic, fingerprinting, keylogging</div>
+        <div class="cat"><span class="cat-dot" style="background:#3b82f6"></span><strong>Dependency Risks</strong> — Typosquatting detection, unpinned versions that could pull compromised releases</div>
+        <div class="cat"><span class="cat-dot" style="background:#f97316"></span><strong>Filesystem Abuse</strong> — Path traversal, system directory access, privilege escalation</div>
+        <div class="cat"><span class="cat-dot" style="background:#6366f1"></span><strong>Supply Chain Signals</strong> — Suspicious star/age ratio, fork status, missing license</div>
+      </div>
+    </section>
+
+    <!-- Install -->
+    <section class="section" id="install">
+      <h2>Get started in 10 seconds</h2>
+      <div class="install-steps">
+        <div class="step">
+          <div class="step-num">1</div>
+          <div class="step-content">
+            <h3>Install</h3>
+            <div class="code-block"><code>npm install -g repoguard</code></div>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-num">2</div>
+          <div class="step-content">
+            <h3>Scan</h3>
+            <div class="code-block"><code>repoguard scan https://github.com/author/skill</code></div>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-num">3</div>
+          <div class="step-content">
+            <h3>Decide</h3>
+            <p class="step-desc">GREEN = safe. YELLOW = review first. RED = don't install.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- JSON + AI -->
+    <section class="section">
+      <h2>Works with any AI tool</h2>
+      <p class="section-sub">
+        Use <code>--json</code> to get machine-readable output. Pipe it to Claude Code, ChatGPT, or any LLM for AI-powered false-positive filtering — no API key required.
+      </p>
+      <div class="terminal terminal-small">
+        <div class="terminal-bar">
+          <span class="dot red-dot"></span>
+          <span class="dot yellow-dot"></span>
+          <span class="dot green-dot"></span>
+        </div>
+        <pre><code><span class="dim">$</span> repoguard scan https://github.com/author/mcp-server --json
+<span class="dim"># Full JSON output — feed it to any AI for deeper review</span></code></pre>
+      </div>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+      <div class="footer-inner">
+        <p>RepoGuard is open source under the ISC license.</p>
+        <div class="footer-links">
+          <a href="https://github.com/rajaindian/RepoGuard" target="_blank" rel="noopener">GitHub</a>
+          <a href="https://github.com/rajaindian/RepoGuard/issues" target="_blank" rel="noopener">Report a bug</a>
+        </div>
+      </div>
+    </footer>
+  </div>
+</Layout>
+
+<style>
+  /* Reset & base */
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  .page {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    background: #0a0a0a;
+    color: #e5e5e5;
+    min-height: 100vh;
+  }
+
+  a { color: #22c55e; text-decoration: none; }
+  a:hover { text-decoration: underline; }
+
+  code {
+    font-family: 'SF Mono', 'Cascadia Code', 'Fira Code', monospace;
+    font-size: 0.9em;
+  }
+
+  /* Nav */
+  nav {
+    border-bottom: 1px solid #1a1a1a;
+    padding: 1rem 0;
+  }
+
+  .nav-inner {
+    max-width: 1000px;
+    margin: 0 auto;
+    padding: 0 1.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .logo {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    font-weight: 700;
+    font-size: 1.1rem;
+    color: #fff;
+  }
+
+  .logo:hover { text-decoration: none; }
+
+  .nav-link {
+    color: #999;
+    font-size: 0.9rem;
+  }
+
+  .nav-link:hover { color: #fff; }
+
+  /* Hero */
+  .hero {
+    max-width: 1000px;
+    margin: 0 auto;
+    padding: 5rem 1.5rem 3rem;
+    text-align: center;
+  }
+
+  .hero-badge {
+    display: inline-block;
+    padding: 0.35rem 1rem;
+    border-radius: 50px;
+    border: 1px solid #22c55e33;
+    background: #22c55e0d;
+    color: #22c55e;
+    font-size: 0.8rem;
+    font-weight: 500;
+    letter-spacing: 0.02em;
+    margin-bottom: 1.5rem;
+  }
+
+  .hero h1 {
+    font-size: clamp(2.5rem, 6vw, 4rem);
+    font-weight: 800;
+    color: #fff;
+    letter-spacing: -0.03em;
+    line-height: 1.1;
+    margin-bottom: 1.25rem;
+  }
+
+  .hero-sub {
+    font-size: 1.2rem;
+    color: #999;
+    max-width: 600px;
+    margin: 0 auto 2rem;
+    line-height: 1.6;
+  }
+
+  .red { color: #ef4444; font-weight: 700; }
+  .yellow { color: #eab308; font-weight: 700; }
+  .green { color: #22c55e; font-weight: 700; }
+  .white { color: #fff; }
+  .dim { color: #555; }
+
+  .hero-actions {
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+    flex-wrap: wrap;
+  }
+
+  .btn {
+    display: inline-block;
+    padding: 0.75rem 1.75rem;
+    border-radius: 8px;
+    font-weight: 600;
+    font-size: 0.95rem;
+    transition: all 0.15s;
+  }
+
+  .btn:hover { text-decoration: none; }
+
+  .btn-primary {
+    background: #22c55e;
+    color: #0a0a0a;
+  }
+
+  .btn-primary:hover {
+    background: #16a34a;
+  }
+
+  .btn-ghost {
+    border: 1px solid #333;
+    color: #ccc;
+    background: transparent;
+  }
+
+  .btn-ghost:hover {
+    border-color: #555;
+    color: #fff;
+  }
+
+  /* Terminal */
+  .demo {
+    max-width: 700px;
+    margin: 0 auto;
+    padding: 0 1.5rem 4rem;
+  }
+
+  .terminal {
+    background: #111;
+    border: 1px solid #222;
+    border-radius: 12px;
+    overflow: hidden;
+  }
+
+  .terminal-small {
+    max-width: 700px;
+    margin: 1.5rem auto 0;
+  }
+
+  .terminal-bar {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    padding: 0.75rem 1rem;
+    background: #1a1a1a;
+    border-bottom: 1px solid #222;
+  }
+
+  .terminal-title {
+    margin-left: 0.75rem;
+    color: #555;
+    font-size: 0.8rem;
+    font-family: 'SF Mono', monospace;
+  }
+
+  .dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+  }
+
+  .red-dot { background: #ef4444; }
+  .yellow-dot { background: #eab308; }
+  .green-dot { background: #22c55e; }
+
+  .terminal pre {
+    padding: 1.25rem;
+    overflow-x: auto;
+    font-size: 0.8rem;
+    line-height: 1.6;
+  }
+
+  /* Sections */
+  .section {
+    max-width: 1000px;
+    margin: 0 auto;
+    padding: 4rem 1.5rem;
+  }
+
+  .section h2 {
+    font-size: 1.8rem;
+    font-weight: 700;
+    color: #fff;
+    text-align: center;
+    margin-bottom: 1rem;
+    letter-spacing: -0.02em;
+  }
+
+  .section-sub {
+    color: #999;
+    text-align: center;
+    max-width: 600px;
+    margin: 0 auto;
+    line-height: 1.6;
+  }
+
+  .section-sub code {
+    background: #1a1a1a;
+    padding: 0.2rem 0.5rem;
+    border-radius: 4px;
+    color: #22c55e;
+  }
+
+  /* Card grid */
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 1.25rem;
+    margin-top: 2.5rem;
+  }
+
+  .card {
+    background: #111;
+    border: 1px solid #1a1a1a;
+    border-radius: 12px;
+    padding: 1.5rem;
+    transition: border-color 0.15s;
+  }
+
+  .card:hover {
+    border-color: #333;
+  }
+
+  .card-icon {
+    font-size: 1.5rem;
+    margin-bottom: 0.75rem;
+  }
+
+  .card h3 {
+    color: #fff;
+    font-size: 1rem;
+    margin-bottom: 0.5rem;
+  }
+
+  .card p {
+    color: #888;
+    font-size: 0.9rem;
+    line-height: 1.5;
+  }
+
+  /* Categories */
+  .categories {
+    max-width: 700px;
+    margin: 2.5rem auto 0;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+  }
+
+  .cat {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.75rem;
+    font-size: 0.95rem;
+    color: #bbb;
+    line-height: 1.5;
+  }
+
+  .cat strong {
+    color: #fff;
+  }
+
+  .cat-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    flex-shrink: 0;
+    margin-top: 0.45rem;
+  }
+
+  /* Install steps */
+  .install-steps {
+    max-width: 550px;
+    margin: 2.5rem auto 0;
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+  }
+
+  .step {
+    display: flex;
+    gap: 1.25rem;
+    align-items: flex-start;
+  }
+
+  .step-num {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    background: #22c55e15;
+    color: #22c55e;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    font-size: 0.9rem;
+    flex-shrink: 0;
+  }
+
+  .step-content h3 {
+    color: #fff;
+    margin-bottom: 0.4rem;
+  }
+
+  .step-desc {
+    color: #888;
+    font-size: 0.9rem;
+  }
+
+  .code-block {
+    background: #111;
+    border: 1px solid #222;
+    border-radius: 8px;
+    padding: 0.6rem 1rem;
+    font-size: 0.85rem;
+    color: #22c55e;
+  }
+
+  /* Footer */
+  footer {
+    border-top: 1px solid #1a1a1a;
+    margin-top: 2rem;
+    padding: 2rem 0;
+  }
+
+  .footer-inner {
+    max-width: 1000px;
+    margin: 0 auto;
+    padding: 0 1.5rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 1rem;
+  }
+
+  .footer-inner p {
+    color: #555;
+    font-size: 0.85rem;
+  }
+
+  .footer-links {
+    display: flex;
+    gap: 1.5rem;
+  }
+
+  .footer-links a {
+    color: #666;
+    font-size: 0.85rem;
+  }
+
+  .footer-links a:hover { color: #999; }
+
+  /* Mobile */
+  @media (max-width: 640px) {
+    .hero { padding: 3rem 1.5rem 2rem; }
+    .terminal pre { font-size: 0.7rem; }
+    .section { padding: 3rem 1.5rem; }
+    .footer-inner { flex-direction: column; text-align: center; }
+  }
+</style>

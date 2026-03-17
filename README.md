@@ -1,18 +1,20 @@
 # RepoGuard
 
-**Security scanner for GitHub repositories — protects non-coders from malicious open-source code.**
+**Scan any skill, plugin, or package before you install it. Know what it does before it runs on your machine.**
 
-RepoGuard analyzes any GitHub repository or local codebase for security threats, privacy violations, and supply-chain risks using pattern-based static analysis. It produces a clear **RED / YELLOW / GREEN** verdict that anyone can understand — no security expertise required. No API keys needed.
+RepoGuard is a security scanner built for the age of AI agents. When you download a Claude Code skill, an MCP server, a VS Code extension, a GitHub Action, or any npm/pip package — RepoGuard scans it for malicious behavior and gives you a clear **RED / YELLOW / GREEN** verdict. No security expertise required. No API keys needed.
+
+**Website:** [repoguard.org](https://repoguard.org)
 
 ---
 
 ## Why RepoGuard?
 
-Open-source is everywhere. Developers tell you to `npm install` or `pip install` packages without a second thought — but what's actually in that code?
+AI tools are making it easier than ever to discover and install skills, plugins, and packages. But every install is a trust decision — and most people can't read the code they're running.
 
-- **Typosquatting attacks** swap one letter in a popular package name and steal your credentials
-- **Install scripts** run `curl | bash` on your machine the moment you install
-- **Data exfiltration** reads your `.env`, SSH keys, or browser cookies and sends them to a webhook
+- **Malicious skills** can read your files, steal API keys, and send them to a remote server
+- **Compromised plugins** run install scripts that execute `curl | bash` on your machine
+- **Typosquatted packages** look like popular libraries but contain data-stealing code
 - **Obfuscated payloads** hide malicious logic behind base64 encoding and `eval()`
 
 RepoGuard catches all of this — and explains it in plain English.
@@ -52,20 +54,28 @@ repoguard scan https://github.com/owner/repo
 repoguard scan ./path/to/project
 ```
 
+### Scan a skill or plugin before installing
+
+```bash
+# Scan a Claude Code skill
+repoguard scan https://github.com/author/some-claude-skill
+
+# Scan an MCP server
+repoguard scan https://github.com/author/mcp-server-xyz
+
+# Scan any npm package source
+repoguard scan https://github.com/author/some-package
+```
+
 ### Get JSON output for AI review
 
 Use `--json` to get machine-readable output that you can pipe to any AI tool:
 
 ```bash
-repoguard scan https://github.com/owner/repo --json
+repoguard scan https://github.com/author/skill --json
 ```
 
-If you're using **Claude Code**, just ask it to run RepoGuard — Claude will scan the repo and review the findings for false positives, all without needing an API key:
-
-```
-> repoguard scan https://github.com/some/repo --json
-  # Claude reviews the output and tells you what's real vs false positive
-```
+If you're using **Claude Code**, just ask it to run RepoGuard — Claude will scan the repo and review the findings for false positives, all without needing an API key.
 
 ---
 
@@ -173,22 +183,32 @@ The per-category score maps to a risk level:
 
 ## Using with AI Tools
 
-RepoGuard does the heavy-lifting static analysis locally. For AI-powered false-positive filtering, just use `--json` output with your favorite AI tool:
+RepoGuard does the heavy-lifting static analysis locally. For AI-powered false-positive filtering, use `--json` output with your favorite AI tool:
 
 **With Claude Code:**
 ```bash
-# Claude runs the scan and reviews the results — no API key needed
-repoguard scan https://github.com/some/repo --json
+# Ask Claude to scan a skill before you install it
+repoguard scan https://github.com/author/claude-skill --json
 ```
 
 **With any LLM:**
 ```bash
-# Pipe JSON to your preferred tool
-repoguard scan ./my-project --json > results.json
-# Then feed results.json to ChatGPT, Claude, Gemini, etc.
+repoguard scan ./downloaded-plugin --json > results.json
+# Feed results.json to ChatGPT, Claude, Gemini, etc.
 ```
 
-This design keeps RepoGuard simple and dependency-free while letting you use any AI model you want for the review step.
+This design keeps RepoGuard dependency-free while letting you use any AI model for the review step.
+
+---
+
+## What Should You Scan?
+
+- **Claude Code skills and plugins** before adding them to your workflow
+- **MCP servers** before connecting them to your AI tools
+- **VS Code / IDE extensions** (scan the source repo)
+- **GitHub Actions** before adding them to your CI/CD
+- **npm / pip / cargo packages** (scan the source repo before installing)
+- **Any open-source repo** someone tells you to clone and run
 
 ---
 

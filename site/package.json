@@ -1,0 +1,14 @@
+{
+  "name": "repoguard-site",
+  "version": "1.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "astro dev",
+    "build": "astro build",
+    "preview": "astro preview"
+  },
+  "dependencies": {
+    "@astrojs/cloudflare": "^13.1.2",
+    "astro": "^6.0.5"
+  }
+}
