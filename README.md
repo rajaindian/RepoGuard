@@ -2,7 +2,7 @@
 
 **Security scanner for GitHub repositories — protects non-coders from malicious open-source code.**
 
-RepoGuard analyzes any GitHub repository or local codebase for security threats, privacy violations, and supply-chain risks. It combines pattern-based static analysis with optional AI-powered review (via Claude) to produce a clear **RED / YELLOW / GREEN** verdict that anyone can understand — no security expertise required.
+RepoGuard analyzes any GitHub repository or local codebase for security threats, privacy violations, and supply-chain risks using pattern-based static analysis. It produces a clear **RED / YELLOW / GREEN** verdict that anyone can understand — no security expertise required. No API keys needed.
 
 ---
 
@@ -22,7 +22,8 @@ RepoGuard catches all of this — and explains it in plain English.
 ## Features
 
 - **8 security rule categories** — covers data exfiltration, obfuscation, install scripts, backdoors, privacy violations, dependency risks, filesystem abuse, and supply-chain signals
-- **AI-powered review** — optionally sends findings + source code to Claude for validation, false-positive reduction, and a plain-English summary
+- **Zero configuration** — no API keys, no accounts, no cloud services. Runs entirely locally.
+- **JSON output** — pipe results to any AI tool (Claude Code, ChatGPT, etc.) for deeper review
 - **PDF reports** — generates a detailed PDF with executive summary, per-category findings, and metadata
 - **Terminal output** — colored risk bars, top findings, and a clear verdict at a glance
 - **Two scan modes** — `strict` (catches everything) or `relaxed` (only high-confidence findings)
@@ -51,17 +52,19 @@ repoguard scan https://github.com/owner/repo
 repoguard scan ./path/to/project
 ```
 
-### Scan with AI review
+### Get JSON output for AI review
+
+Use `--json` to get machine-readable output that you can pipe to any AI tool:
 
 ```bash
-export ANTHROPIC_API_KEY=sk-ant-...
-repoguard scan https://github.com/owner/repo
+repoguard scan https://github.com/owner/repo --json
 ```
 
-To skip AI review and use static analysis only:
+If you're using **Claude Code**, just ask it to run RepoGuard — Claude will scan the repo and review the findings for false positives, all without needing an API key:
 
-```bash
-repoguard scan https://github.com/owner/repo --no-ai
+```
+> repoguard scan https://github.com/some/repo --json
+  # Claude reviews the output and tells you what's real vs false positive
 ```
 
 ---
@@ -76,8 +79,8 @@ Arguments:
 
 Options:
   --mode <mode>         Scan sensitivity: strict (default) or relaxed
-  --no-ai               Skip AI review, static analysis only
-  --model <model>       Claude model to use (default: claude-sonnet-4-6)
+  --json                Output raw JSON (for piping to AI tools or other processors)
+  --no-pdf              Skip PDF report generation
   --output <path>       Custom PDF output path
   --submit              Submit results to community database (coming soon)
 ```
@@ -114,7 +117,7 @@ Metadata-based analysis: suspicious star-to-age ratios, fork status warnings, an
 
 ## How Scoring Works
 
-Each category receives a **score from 0–10** based on:
+Each category receives a **score from 0-10** based on:
 
 ```
 score = sum of (severity_weight x confidence) per finding
@@ -132,9 +135,9 @@ The per-category score maps to a risk level:
 | Score | Level  |
 |-------|--------|
 | 0     | NONE   |
-| 1–3   | LOW    |
-| 4–6   | MEDIUM |
-| 7–10  | HIGH   |
+| 1-3   | LOW    |
+| 4-6   | MEDIUM |
+| 7-10  | HIGH   |
 
 **Final verdict:**
 - **RED** — any category at HIGH level. Do not use this repository.
@@ -146,42 +149,46 @@ The per-category score maps to a risk level:
 ## Example Output
 
 ```
-  ╔══════════════════════════════════════════╗
-  ║          REPOGUARD  SCAN RESULT         ║
-  ║                                         ║
-  ║   Verdict:   🔴 RED                     ║
-  ║   Repo:      sketchy-package            ║
-  ╚══════════════════════════════════════════╝
+  RepoGuard Report: sketchy-package
+  Verdict: RED
 
-  Data Exfiltration   █████████░  9/10  HIGH
-  Obfuscation         ██████░░░░  6/10  MED
-  Install Scripts     ████████░░  8/10  HIGH
-  Backdoors           ░░░░░░░░░░  0/10  NONE
-  Privacy             ███░░░░░░░  3/10  LOW
-  Dependencies        ░░░░░░░░░░  0/10  NONE
-  Filesystem          █████░░░░░  5/10  MED
-  Supply Chain        ██░░░░░░░░  2/10  LOW
+  Data Exfiltration      █████████░  HIGH
+  Obfuscated Code        ██████░░░░  MED
+  Install Scripts        ████████░░  HIGH
+  Backdoors              ░░░░░░░░░░  NONE
+  Privacy Violations     ███░░░░░░░  LOW
+  Dependency Risks       ░░░░░░░░░░  NONE
+  Filesystem Access      █████░░░░░  MED
+  Supply Chain Red Flags ██░░░░░░░░  LOW
 
   Top findings:
-  1. [HIGH] postinstall script runs curl | bash  (package.json:8)
-  2. [HIGH] Reads .env and POSTs to Discord webhook  (steal.js:12)
-  3. [MED]  Base64-encoded payload passed to eval()  (utils.js:45)
+  ! postinstall script runs curl | bash  (package.json:8)
+  ! Reads .env and POSTs to Discord webhook  (steal.js:12)
+  * Base64-encoded payload passed to eval()  (utils.js:45)
 
   PDF report saved to ./repoguard-report-sketchy-package.pdf
 ```
 
 ---
 
-## AI Review
+## Using with AI Tools
 
-When an `ANTHROPIC_API_KEY` is available, RepoGuard sends the static analysis findings along with the packed source code to Claude for a second opinion. The AI reviewer:
+RepoGuard does the heavy-lifting static analysis locally. For AI-powered false-positive filtering, just use `--json` output with your favorite AI tool:
 
-1. **Validates** static findings — dismisses false positives, confirms real threats
-2. **Discovers** additional risks the pattern matcher missed
-3. **Summarizes** the results in plain English for non-technical users
-4. **Recommends** whether the repo is safe to use, needs caution, or should be avoided
+**With Claude Code:**
+```bash
+# Claude runs the scan and reviews the results — no API key needed
+repoguard scan https://github.com/some/repo --json
+```
 
-You can choose the Claude model with `--model` or the `REPOGUARD_MODEL` environment variable.
+**With any LLM:**
+```bash
+# Pipe JSON to your preferred tool
+repoguard scan ./my-project --json > results.json
+# Then feed results.json to ChatGPT, Claude, Gemini, etc.
+```
+
+This design keeps RepoGuard simple and dependency-free while letting you use any AI model you want for the review step.
 
 ---
 
@@ -230,12 +237,9 @@ src/
 │   └── supply-chain.ts
 ├── scoring/
 │   └── scorer.ts       # Scoring algorithm and verdict logic
-├── output/
-│   ├── terminal.ts     # Colored terminal reports
-│   └── pdf.ts          # PDF report generation
-└── ai/
-    ├── reviewer.ts     # Claude API integration
-    └── prompts.ts      # AI system and user prompts
+└── output/
+    ├── terminal.ts     # Colored terminal reports
+    └── pdf.ts          # PDF report generation
 ```
 
 ---

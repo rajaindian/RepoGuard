@@ -15,28 +15,33 @@ export function run(): void {
     .command('scan <target>')
     .description('Scan a GitHub repo URL or local directory')
     .option('--mode <mode>', 'Scan mode: strict or relaxed', 'strict')
-    .option('--no-ai', 'Skip AI review (static analysis only)')
-    .option('--model <model>', 'Claude model to use (or set REPOGUARD_MODEL env var)', process.env.REPOGUARD_MODEL || 'claude-sonnet-4-6')
+    .option('--json', 'Output raw JSON results (for piping to other tools or AI review)')
+    .option('--no-pdf', 'Skip PDF report generation')
     .option('--submit', 'Submit results to community database')
     .option('--output <path>', 'Custom PDF output path')
     .action(async (target, options) => {
       try {
-        const apiKey = process.env.ANTHROPIC_API_KEY;
         const result = await scan(target, {
           mode: options.mode,
-          ai: options.ai !== false && !!apiKey,
-          apiKey,
-          model: options.model,
         });
+
+        // JSON output mode — print JSON and exit
+        if (options.json) {
+          console.log(JSON.stringify(result, null, 2));
+          if (result.verdict === 'RED') process.exit(1);
+          return;
+        }
 
         // Terminal output
         console.log(renderTerminalReport(result));
 
         // PDF output
-        const repoName = target.split('/').pop()?.replace('.git', '') || 'repo';
-        const pdfPath = options.output || `./repoguard-report-${repoName}.pdf`;
-        await generatePDF(result, pdfPath);
-        console.log(`\nFull PDF report saved to: ${pdfPath}`);
+        if (options.pdf !== false) {
+          const repoName = target.split('/').pop()?.replace('.git', '') || 'repo';
+          const pdfPath = options.output || `./repoguard-report-${repoName}.pdf`;
+          await generatePDF(result, pdfPath);
+          console.log(`\nFull PDF report saved to: ${pdfPath}`);
+        }
 
         // Community submission
         if (options.submit) {

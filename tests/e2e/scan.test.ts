@@ -5,7 +5,7 @@ import { existsSync, unlinkSync } from 'node:fs';
 describe('E2E: repoguard scan', () => {
   it('scans safe repo and exits 0', () => {
     const result = execSync(
-      'node dist/bin/repoguard.js scan tests/fixtures/safe-repo --no-ai',
+      'node dist/bin/repoguard.js scan tests/fixtures/safe-repo',
       { encoding: 'utf8' }
     );
     expect(result).toContain('GREEN');
@@ -14,7 +14,7 @@ describe('E2E: repoguard scan', () => {
   it('scans malicious repo and exits 1', () => {
     try {
       execSync(
-        'node dist/bin/repoguard.js scan tests/fixtures/malicious-repo --no-ai',
+        'node dist/bin/repoguard.js scan tests/fixtures/malicious-repo',
         { encoding: 'utf8' }
       );
       expect.fail('Should have exited with code 1');
@@ -28,7 +28,7 @@ describe('E2E: repoguard scan', () => {
     const pdfPath = './test-report.pdf';
     try {
       execSync(
-        `node dist/bin/repoguard.js scan tests/fixtures/safe-repo --no-ai --output ${pdfPath}`,
+        `node dist/bin/repoguard.js scan tests/fixtures/safe-repo --output ${pdfPath}`,
         { encoding: 'utf8' }
       );
       expect(existsSync(pdfPath)).toBe(true);
@@ -37,9 +37,20 @@ describe('E2E: repoguard scan', () => {
     }
   });
 
+  it('outputs JSON with --json flag', () => {
+    const result = execSync(
+      'node dist/bin/repoguard.js scan tests/fixtures/safe-repo --json',
+      { encoding: 'utf8' }
+    );
+    const parsed = JSON.parse(result);
+    expect(parsed.verdict).toBe('GREEN');
+    expect(parsed.findings).toBeDefined();
+    expect(parsed.categoryScores).toBeDefined();
+  });
+
   it('shows coming soon for --submit', () => {
     const result = execSync(
-      'node dist/bin/repoguard.js scan tests/fixtures/safe-repo --no-ai --submit',
+      'node dist/bin/repoguard.js scan tests/fixtures/safe-repo --submit',
       { encoding: 'utf8' }
     );
     expect(result).toContain('coming soon');
